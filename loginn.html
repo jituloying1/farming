@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login System</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    .form-container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; }
+    .input-group input { width: 100%; padding: 8px; }
+    .submit-btn { text-align: center; }
+    .submit-btn button { padding: 10px 20px; }
+    .switch-form { text-align: center; margin-top: 10px; }
+    #registerForm, #forgotForm { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>User Login</h2>
+
+  <!-- Login Form -->
+  <form id="loginForm">
+    <div class="input-group">
+      <label for="login-identifier">Email or Phone:</label>
+      <input type="text" id="login-identifier" required>
+    </div>
+    <div class="input-group">
+      <label for="login-password">Password:</label>
+      <input type="password" id="login-password" required>
+    </div>
+    <div class="submit-btn">
+      <button type="submit">Login</button>
+    </div>
+    <p class="switch-form">
+      <a href="#" onclick="showForm('register')">Create Account</a> | 
+      <a href="#" onclick="showForm('forgot')">Forgot Password?</a>
+    </p>
+  </form>
+
+  <!-- Register Form -->
+  <form id="registerForm">
+    <h3>Register</h3>
+    <div class="input-group">
+      <label for="reg-identifier">Phone or Email:</label>
+      <input type="text" id="reg-identifier" required>
+    </div>
+    <div class="input-group">
+      <label for="reg-password">Password:</label>
+      <input type="password" id="reg-password" required>
+    </div>
+    <div class="submit-btn">
+      <button type="submit">Register</button>
+    </div>
+    <p class="switch-form">
+      <a href="#" onclick="showForm('login')">Back to Login</a>
+    </p>
+  </form>
+
+  <!-- Forgot Password Form -->
+  <form id="forgotForm">
+    <h3>Recover Password</h3>
+    <div class="input-group">
+      <label for="forgot-identifier">Enter Email or Phone:</label>
+      <input type="text" id="forgot-identifier" required>
+    </div>
+    <div class="submit-btn">
+      <button type="submit">Recover</button>
+    </div>
+    <p class="switch-form">
+      <a href="#" onclick="showForm('login')">Back to Login</a>
+    </p>
+  </form>
+</div>
+
+<script>
+  // Helper: Load users from localStorage
+  function loadUsers() {
+    return JSON.parse(localStorage.getItem('users')) || [];
+  }
+
+  // Helper: Save users to localStorage
+  function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  // Show specific form
+  function showForm(form) {
+    document.getElementById('loginForm').style.display = (form === 'login') ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = (form === 'register') ? 'block' : 'none';
+    document.getElementById('forgotForm').style.display = (form === 'forgot') ? 'block' : 'none';
+  }
+
+  // Register
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('reg-identifier').value.trim();
+    const pass = document.getElementById('reg-password').value.trim();
+
+    const users = loadUsers();
+    const existing = users.find(u => u.id === id);
+
+    if (existing) {
+      alert('User already exists!');
+    } else {
+      users.push({ id, password: pass });
+      saveUsers(users);
+      alert('Registered successfully! You can now login.');
+      showForm('login');
+    }
+  });
+
+  // Login
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('login-identifier').value.trim();
+    const pass = document.getElementById('login-password').value.trim();
+
+    const users = loadUsers();
+    const user = users.find(u => u.id === id && u.password === pass);
+
+    if (user) {
+      alert('Login successful!');
+      window.location.href = 'main.html'; // Redirect to main page
+    } else {
+      alert('Invalid credentials!');
+    }
+  });
+
+  // Forgot Password
+  document.getElementById('forgotForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('forgot-identifier').value.trim();
+
+    const users = loadUsers();
+    const user = users.find(u => u.id === id);
+
+    if (user) {
+      alert(`Your password is: ${user.password}`);
+    } else {
+      alert('User not found!');
+    }
+  });
+</script>
+
+</body>
+</html>
